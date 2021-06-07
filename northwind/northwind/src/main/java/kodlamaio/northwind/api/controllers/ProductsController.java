@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import kodlamaio.northwind.business.abstracts.ProductService;
 import kodlamaio.northwind.core.utilities.results.DataResult;
 import kodlamaio.northwind.core.utilities.results.Result;
 import kodlamaio.northwind.entities.concretes.Product;
+import kodlamaio.northwind.entities.dtos.ProductWithCategoryDto;
 
 @RestController//sen bir controller demek, java olmayanlar da tanısın diye yazıyoruz
 @RequestMapping("/api/products")//eğer dış dünyadan birisi istekte bulunursa bu karar verecek,farklı controlleri
@@ -43,6 +45,13 @@ public class ProductsController {
 		return this.productService.getAll();
 	}
 	
+	@GetMapping("/getProductWithCategoryDetails")
+	public DataResult<List<ProductWithCategoryDto>> getProductWithCategoryDetails() {
+		return this.productService.getProductWithCategoryDetails();
+	}
+	
+	
+	
 	//bir şey göndereceğimiz zaman eklediğimizde vs bu anotasyon kullanılır
 	@PostMapping("/add")// be şekilde post işleminde bir parametre alırsak ki genelde alırız o zaman;
 	public Result add(@RequestBody Product product) {//gelen requestin bi body si var demek, bu da
@@ -51,5 +60,30 @@ public class ProductsController {
 		//alanları product ın içinde arıyor bunları haritalandırıyor, arka planda bir product oluşturuyor
 		// ve bunu buraya yollayıp eşleştiriyor controller içine yani
 		return this.productService.add(product);
+	}
+	
+	@GetMapping("/getByProductName")//kullanıcıdan aldığımız istek bu ve aşağıdaki parametre, ona göre sonuç çıkacak
+	public DataResult<Product> getByProductName(@RequestParam String productName){//getby product servise bağlanıcak,parametre 
+		//olarak gönderdiği için param komutu kullandık
+		return this.productService.getByProductName(productName);
+	}
+	
+	@GetMapping("/getByProductNameAndCategory")
+	public DataResult<Product> getByProductNameAndCategory(@RequestParam("productName") String productName, @RequestParam("categoryId") int categoryId) {
+	return this.productService.getByProductNameAndCategory(productName, categoryId);
+	}
+	
+	@GetMapping("/getByProductNameContains")
+	DataResult<List<Product>> getByProductNameContains(@RequestParam String productName){
+		return this.productService.getByProductNameContains(productName);
+	}
+	@GetMapping("/getAllByPage")
+	DataResult<List<Product>>  getAll(int pageNo,int pageSize){
+		return this.productService.getAll(pageNo, pageSize);
+	}
+
+	@GetMapping("/getAllSorted")
+	DataResult<List<Product>> getAllSorted() {
+	return this.productService.getAllSorted();
 	}
 }
